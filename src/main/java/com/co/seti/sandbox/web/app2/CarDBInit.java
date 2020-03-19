@@ -25,18 +25,21 @@ import javax.ejb.Startup;
 public class CarDBInit {
     @PostConstruct
     public void initialize() {
+        System.out.println("com.co.seti.sandbox.web.app2.CarDBInit.initialize()");
         Connection connection;
         try {
+            System.out.println("Searching for Car table");
             connection = ConnectionFactory.getConnection();
             PreparedStatement statement = connection.prepareStatement("SHOW TABLES LIKE 'Car'");
             ResultSet result = statement.executeQuery();
             if (!result.next()){
+                System.out.println("Car table don't found.");
                 result.close();
                 statement.close();
                 connection.close();
                 connection = ConnectionFactory.getConnection();
                 connection.setAutoCommit(false);
-                
+                System.out.println("Create Car table");
                 String sqlCreateTable = "CREATE TABLE IF NOT EXISTS Car(\n" +
                 "	car_id INTEGER NOT NULL AUTO_INCREMENT,\n" +
                 "	cname VARCHAR(60) NOT NULL,\n" +
@@ -48,6 +51,7 @@ public class CarDBInit {
                 statementCreate.executeUpdate(sqlCreateTable);
                 connection.commit();
                 statementCreate.close();
+                System.out.println("Insert Car data");
                 Statement insertStatement = connection.createStatement();
                 insertStatement.addBatch("INSERT INTO Car VALUES(1,'Zen','Grey',45.34,'India')");
                 insertStatement.addBatch("INSERT INTO Car VALUES(2,'Volkswagen','Black',49.64,'Germany')");
@@ -59,6 +63,7 @@ public class CarDBInit {
                 int [] updateCounts = insertStatement.executeBatch();
                 connection.commit();
                 insertStatement.close();
+                System.out.println("Create and insert end");
             } else {
                 result.close();
                 statement.close();
